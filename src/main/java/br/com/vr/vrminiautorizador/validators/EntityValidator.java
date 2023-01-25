@@ -2,7 +2,6 @@ package br.com.vr.vrminiautorizador.validators;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
-import jakarta.ws.rs.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -14,7 +13,7 @@ public class EntityValidator {
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public static ValidationException existsRecord(String message) {
+    public static ValidationException invalidProcessException(String message) {
         return new ValidationException(message);
     }
 

@@ -10,31 +10,28 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
-@Table(name = "card")
+@Table(name = "transaction")
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Card extends AuditMetadataEntity implements Serializable {
+public class Transaction extends AuditMetadataEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "card_number", length = 16, nullable = false, updatable = false, unique = true)
+    @Column(name = "card_number", length = 16, nullable = false, updatable = false)
     private String cardNumber;
 
-    @Column(name = "card_password", length = 12, nullable = false)
-    private String password;
+    @Column(name = "transaction_value", precision = 12, scale = 4, nullable = false)
+    private BigDecimal transactionValue;
 
-    @Column(name = "card_balance", precision = 12, scale = 4, nullable = false)
-    private BigDecimal balance;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Transaction> transactionList;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "card_number", referencedColumnName = "card_number", nullable = false, insertable = false, updatable = false)
+    private Card card;
 
 }

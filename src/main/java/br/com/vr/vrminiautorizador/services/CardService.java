@@ -1,6 +1,6 @@
 package br.com.vr.vrminiautorizador.services;
 
-import br.com.vr.vrminiautorizador.models.adapters.CardAdapter;
+import br.com.vr.vrminiautorizador.models.adapters.card.CardAdapter;
 import br.com.vr.vrminiautorizador.models.dtos.card.CreateCardDTO;
 import br.com.vr.vrminiautorizador.models.entities.Card;
 import br.com.vr.vrminiautorizador.models.vos.CardBalanceVO;
@@ -26,7 +26,7 @@ public class CardService {
     private void validateNewCardRules(CreateCardDTO createCardDTO) {
         if(this.cardRepository.existsByCardNumber(createCardDTO.getNumeroCartao())){
             //Para o caso onde o cartão já exista, preferi retornar uma mensagem de exceção ao invés do payload.
-            throw EntityValidator.existsRecord(String.format("Cartão %s existente", createCardDTO.getNumeroCartao()));
+            throw EntityValidator.invalidProcessException(String.format("Cartão %s existente", createCardDTO.getNumeroCartao()));
         }
     }
 

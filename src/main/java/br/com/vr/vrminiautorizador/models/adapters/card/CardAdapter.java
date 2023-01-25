@@ -1,4 +1,4 @@
-package br.com.vr.vrminiautorizador.models.adapters;
+package br.com.vr.vrminiautorizador.models.adapters.card;
 
 import br.com.vr.vrminiautorizador.models.dtos.card.CreateCardDTO;
 import br.com.vr.vrminiautorizador.models.entities.Card;
