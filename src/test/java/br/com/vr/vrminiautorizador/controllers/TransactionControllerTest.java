@@ -1,6 +1,7 @@
 package br.com.vr.vrminiautorizador.controllers;
 
 import br.com.vr.vrminiautorizador.models.enums.ETransactionMessageHandler;
+import br.com.vr.vrminiautorizador.utils.ExceptionDTOUtil;
 import br.com.vr.vrminiautorizador.utils.TransactionUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.util.Assert;
 
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,20 +33,24 @@ public class TransactionControllerTest {
     @Order(1)
     public void carrying_out_several_transactions_until_the_balance_is_zeroed() throws Exception {
         final var transaction = TransactionUtil.getTransaction();
-        HttpStatus statusExpectedWheInsufficientFunds = HttpStatus.OK;
-        String returnMessage = "";
-        while(!statusExpectedWheInsufficientFunds.is4xxClientError()){
+        ExceptionDTOUtil exceptionDTOUtil = new ExceptionDTOUtil();
+        do {
             ResultActions resultActions = mockMvc.perform(post("/transacoes")
                             .content(new ObjectMapper().writeValueAsString(transaction))
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
                     .andDo(print());
             MvcResult mvcResult = resultActions.andReturn();
-            statusExpectedWheInsufficientFunds = HttpStatus.valueOf(mvcResult.getResponse().getStatus());
-            returnMessage = mvcResult.getResponse().getErrorMessage();
+            exceptionDTOUtil.setCode(mvcResult.getResponse().getStatus());
+            if(HttpStatus.valueOf(exceptionDTOUtil.getCode()).is4xxClientError()){
+                String jsonString = mvcResult.getResponse().getContentAsString();
+                ObjectMapper objectMapper = new ObjectMapper();
+                exceptionDTOUtil = objectMapper.readValue(jsonString, ExceptionDTOUtil.class);
+            }
         }
-        verify(statusExpectedWheInsufficientFunds.is4xxClientError()
-                && returnMessage.equalsIgnoreCase(ETransactionMessageHandler.INSUFFICIENT_FUNDS.getMessage()));
+        while(!HttpStatus.valueOf(exceptionDTOUtil.getCode()).is4xxClientError());
+        Assert.isTrue(exceptionDTOUtil.getMessage().equalsIgnoreCase(ETransactionMessageHandler.INSUFFICIENT_FUNDS.getMessage()), "insufficient_funds");
+
     }
 
     @Test
@@ -54,8 +59,8 @@ public class TransactionControllerTest {
         final var transaction = TransactionUtil.getTransactionWithInvalidCardPassword();
         mockMvc.perform(post("/transacoes")
                         .content(new ObjectMapper().writeValueAsString(transaction))
-                        .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
-                        .accept(jakarta.ws.rs.core.MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.message")
@@ -69,8 +74,8 @@ public class TransactionControllerTest {
         final var transaction = TransactionUtil.getTransactionWithNonExistentCard();
         mockMvc.perform(post("/transacoes")
                         .content(new ObjectMapper().writeValueAsString(transaction))
-                        .contentType(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
-                        .accept(jakarta.ws.rs.core.MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.message")

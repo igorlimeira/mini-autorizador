@@ -9,7 +9,7 @@ public class TransactionUtil {
         return TransactionDTO.builder()
                 .numeroCartao("6549873025634599")
                 .senhaCartao("1234")
-                .valor(BigDecimal.TEN)
+                .valor(BigDecimal.valueOf(250))
                 .build();
     }
 
