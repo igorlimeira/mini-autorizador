@@ -1,0 +1,23 @@
+info:
+  app:
+    name: VR - Mini Autorizador
+    version: '@project.version@'
+    description: VR - Mini Autorizador
+spring:
+  application:
+    name: vr-mini-autorizador
+  profiles:
+    include: security
+  jpa:
+    properties:
+      hibernate:
+        format_sql: 'true'
+    hibernate:
+      ddl-auto: create
+    openInView: 'true'
+    show_sql: 'true'
+  datasource:
+    driver-class-name: '${db-config.driver}'
+    url: '${db-config.url}'
+    username: '${db-config.user}'
+    password: '${db-config.password}'

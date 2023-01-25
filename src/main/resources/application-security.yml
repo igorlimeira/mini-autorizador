@@ -1,0 +1,9 @@
+# Normalmente este arquivo não deveria possuir dados sensíveis expostos,
+# o arquivo possuiria parâmetros referenciando a variáveis de ambiente ou
+# o próprio arquivo de security seria commitado como modelo e orientando exemplos
+# de como paramwetrizar os dados.
+db-config:
+  driver: com.mysql.jdbc.Driver
+  user: root
+  url: "jdbc:mysql://localhost:3306/miniautorizador"
+  password:
