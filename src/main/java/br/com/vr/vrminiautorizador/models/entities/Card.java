@@ -24,7 +24,7 @@ public class Card extends AuditMetadataEntity implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "card_number", length = 16, nullable = false, updatable = false)
+    @Column(name = "card_number", length = 16, nullable = false, updatable = false, unique = true)
     private String cardNumber;
 
     @Column(name = "card_password", length = 12, nullable = false)
