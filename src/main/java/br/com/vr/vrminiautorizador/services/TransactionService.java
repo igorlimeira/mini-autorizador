@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -24,7 +26,7 @@ public class TransactionService {
     @Autowired
     private ICardRepository cardRepository;
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW, timeout = 30)
     public String newTransaction(TransactionDTO transactionDTO) {
         try{
             Card card = this.cardRepository.findByCardNumber(transactionDTO.getNumeroCartao())
